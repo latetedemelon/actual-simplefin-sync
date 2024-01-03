@@ -1,13 +1,12 @@
 # Define the Python and Node.js version arguments
 ARG PYTHON_VERSION=3.12
 ARG NODE_VERSION=21
-ARG LINUX_OS=alpine
 
 # First stage: Build environment with Python, Node.js, and make
-FROM nikolaik/python-nodejs:python$PYTHON_VERSION-nodejs${NODE_VERSION}-alpine as builder
+FROM python:${PYTHON_VERSION}-alpine as builder
 
 # Install make and other necessary build dependencies
-RUN apk add --no-cache make build-base
+RUN apk add --no-cache --update nodejs npm make build-base
 
 # Set the working directory
 WORKDIR /usr/src/app
