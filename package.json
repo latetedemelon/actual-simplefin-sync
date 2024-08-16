@@ -8,7 +8,7 @@
   "license": "MIT",
   "private": false,
   "dependencies": {
-    "@actual-app/api": "^6.3.0",
+    "@actual-app/api": "^6.9.0",
     "better-sqlite3": "^9.2.2",
     "inquirer": "^8.2.0",
     "nconf": "^0.11.3",
