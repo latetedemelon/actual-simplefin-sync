@@ -8,7 +8,7 @@
   "license": "MIT",
   "private": false,
   "dependencies": {
-    "@actual-app/api": "^6.1.1",
+    "@actual-app/api": "^6.9.0",
     "inquirer": "^8.2.0",
     "nconf": "^0.11.3",
     "fs-extra": "^10.1.0"
