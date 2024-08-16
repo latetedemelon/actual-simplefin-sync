@@ -8,13 +8,44 @@ const {
   initialize,
 } = require("./setup.js");
 
-nconf.argv().env().file({ file: './config.json' })
+const logLevels = {
+  DEBUG: 'debug',
+  INFO: 'info',
+  WARNING: 'warning',
+  ERROR: 'error'
+};
+
+function log(level, message) {
+  console.log(`[${new Date().toISOString()}] [${level.toUpperCase()}]: ${message}`);
+}
+
+// Define a constant for the command line argument name
+const configFileArg = 'configFile';
+
+// Setup nconf to use (in order): command-line arguments, environment variables
+nconf.argv({
+  [configFileArg]: {
+    describe: 'Path to the configuration file',
+    type: 'string'
+  }
+}).env();
+
+// Retrieve the custom configuration file path using the constant
+const customConfigPath = nconf.get(configFileArg);
+
+// Use the custom config file if provided, otherwise default to './config.json'
+const configFilePath = customConfigPath || './config.json';
+
+// Load the configuration file specified by configFilePath
+nconf.file({ file: configFilePath });
 
 let actualInstance
 
 async function run () {
   let token = nconf.get('simpleFIN:token')
+  log(logLevels.DEBUG, `token: ${token}`)
   let accessKey = nconf.get('simpleFIN:accessKey')
+  log(logLevels.DEBUG, `accessKey: ${accessKey}`)
   let budgetId = nconf.get('actual:budgetId')
   let budgetEncryption = nconf.get('actual:budgetEncryption') || ''
   let serverUrl = nconf.get('actual:serverUrl') || ''

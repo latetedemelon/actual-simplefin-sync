@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  app:
+    build: .
+    stdin_open: true
+    tty: true
+    volumes:
+      - config_volume:/app/config
+#      - ./logs:/app/logs
+
+volumes:
+  config_volume:
+    name: ${PROFILE_NAME:-actual_config}

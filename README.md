@@ -41,3 +41,20 @@ Sync [ActualBudget](https://actualbudget.com/) via [SimpleFIN](https://beta-brid
 - I've had a couple users report segfaults using Node v21.x. I haven't been able to recreate, but for those that have, switching to Node 20.x, deleting and re-cloning, and setting up again (with a new SimpleFin setup token) has fixed the issue both times.
 
 - Be sure you have a budget, with encryption password (or leave blank with none), that has at least 1 account. You MUST have at least 1 account created, so you have something to map SimpleFin accounts to.
+
+## RUNNING IN DOCKER
+
+I like to use docker compose in the following way:
+
+```bash
+sudo docker compose build
+```
+
+```bash
+sudo PROFILE_NAME=my-bank docker compose run --rm app
+```
+Just like non-docker, the first time it is run with a given PROFILE_NAME it will go through the setup process. On subsequent runs with the same PROFILE_NAME, it will run a sync and exit. This makes it ideal for scheduling with a cron job.
+
+The configurations are stored in docker volumes for a layer of obfusctation. These could feasibly be encryted in the container in future versions.
+
+A pre-built docker image is available [here](https://hub.docker.com/r/oddomatik/actual-simplefin-sync).

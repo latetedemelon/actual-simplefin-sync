@@ -1,6 +1,26 @@
 const inquirer = require('inquirer')
 const simpleFIN = require('./simpleFIN')
 const api = require('@actual-app/api');
+const fs = require('fs');
+
+// Path for the log file
+const logFilePath = 'setup.log';
+
+const logLevels = {
+  DEBUG: 'debug',
+  INFO: 'info',
+  WARNING: 'warning',
+  ERROR: 'error'
+};
+
+function log(level, message) {
+  const logMessage = `[${new Date().toISOString()}] [${level.toUpperCase()}]: ${message}\n`;
+  fs.appendFile(logFilePath, logMessage, (err) => {
+    if (err) {
+      console.error(`Failed to write to log: ${err}`);
+    }
+  });
+}
 
 let _token
 let _accessKey
@@ -18,17 +38,22 @@ const prompts = [
     name: 'token',
     message: 'Enter your SimpleFIN Token (https://beta-bridge.simplefin.org/):',
     default: () => getToken(),
-    validate: async (i, a) => {
-      if (i !== getToken()) {
+    validate: async (input, answers) => {
+      log(`Validating token: ${input}`);
+      if (input !== getToken()) {
         try {
-          a.accessKey = await simpleFIN.getAccessKey(i)
+          log(`[SETUP] Calling getAccessKey with token: ${input}`);
+          answers.accessKey = await simpleFIN.getAccessKey(input);
+          log(`Retrieved access key: ${answers.accessKey}`);
         } catch (e) {
-          return `Invalid Token: ${i}`
+          console.error(`Invalid Token: ${input}, Error: ${e.message}`);
+          return `Invalid Token: ${input}`;
         }
       } else {
-        a.accessKey = getAccessKey()
+        answers.accessKey = await simpleFIN.getAccessKey(input);
+        log(`Using existing access key: ${answers.accessKey}`);
       }
-      return true
+      return true;
     }
   },
   {
@@ -130,6 +155,7 @@ async function initialSetup(token, accessKey, budgetId, budgetEncryption, server
   _serverPassword = serverPassword;
   _sendNotes = sendNotes;
   console.log('Prompting user for input...');
+  console.log('Current token and accessKey:', { token: _token, accessKey: _accessKey });
   const initialSetup = await inquirer.prompt(prompts);
   console.log('User input received: ', initialSetup);
   return initialSetup;
